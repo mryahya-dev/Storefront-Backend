@@ -1,6 +1,26 @@
 version: 2.1
 
 jobs:
+  apply_sql_migrations:
+    docker:
+      - image: cimg/postgres:15.2
+    steps:
+      - checkout
+      - run:
+          name: Install flyway cli
+          command: |
+            wget https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/10.24.0/flyway-commandline-10.24.0-linux-x64.tar.gz
+            tar -xvf flyway-commandline-10.24.0-linux-x64.tar.gz
+            sudo ln -s $(pwd)/flyway-10.24.0/flyway /usr/local/bin/flyway
+            flyway -v
+      - run:
+          name: Apply SQL migrations
+          command: |
+             flyway -url="jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}" \
+                -user="$DB_USERNAME" \
+                -password="$DB_PASSWORD" \
+                -locations=/sql-migrations \
+                migrate
   test-backend:
     docker:
       - image: cimg/node:18.20
@@ -9,7 +29,6 @@ jobs:
       - run:
           name: Install backend dependencies
           command: |
-           
             npm install
       - run:
           name: Run backend tests
@@ -79,6 +98,11 @@ workflows:
   version: 2
   build-test-deploy:
     jobs:
+      - apply_sql_migrations:
+          context: shared_envs
+          filters:
+            branches:
+              only: main
       - test-backend:
           context: shared_envs
           filters:
