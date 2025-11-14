@@ -9,9 +9,9 @@ jobs:
       - run:
           name: Install flyway cli
           command: |
-            wget https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/10.24.0/flyway-commandline-10.24.0-linux-x64.tar.gz
-            tar -xvf flyway-commandline-10.24.0-linux-x64.tar.gz
-            sudo ln -s $(pwd)/flyway-10.24.0/flyway /usr/local/bin/flyway
+            wget https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/11.17.0/flyway-commandline-11.17.0-linux-x64.tar.gz
+            tar -xvf flyway-commandline-11.17.0-linux-x64.tar.gz
+            sudo ln -s $(pwd)/flyway-commandline-11.17.0/flyway /usr/local/bin/flyway
             flyway -v
       - run:
           name: Apply SQL migrations
