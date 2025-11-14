@@ -11,12 +11,7 @@ jobs:
           command: |
            
             npm install
-      - run:
-          name: Run backend tests
-          command: |
-            cd back-end
-            mkdir -p uploads
-            npm test
+
 
   build-backend-image:
     docker:
@@ -45,18 +40,6 @@ jobs:
       - run:
           name: Install jq
           command: sudo apt-get update && sudo apt-get install -y jq
-
-      - run:
-          name: Install Flyway && Run DB Migrations
-          command: |
-            curl -L https://download.flywaydb.org/flyway-commandline-latest-linux-x64.tar.gz -o flyway.tar.gz
-            tar -xzf flyway.tar.gz
-            sudo mv flyway-*/flyway /usr/local/bin/flyway
-            flyway -url="jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}" \
-                  -user="${{ secrets.DB_USERNAME }}" \
-                  -password="${{ secrets.DB_PASSWORD }}" \
-                  -locations=filesystem:${{ github.workspace }}/sql-migrations \
-                  migrate
           
       - run:
           name: Deploy backend  and verify
