@@ -27,13 +27,13 @@ jobs:
       - run:
           name: Build backend Docker image
           command: |
-             docker build -t $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest .
+            docker build -t $DOCKER_HUB_USERNAME/storefront_backend:latest .
+
       - run:
           name: Push image to Docker Hub
           command: |
             echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-            docker push $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest
-
+            docker push $DOCKER_HUB_USERNAME/storefront_backend:latest
   deploy-and-verify:
     docker:
       - image: cimg/base:stable
