@@ -9,7 +9,7 @@ jobs:
       - run:
           name: Install backend dependencies
           command: |
-            cd back-end
+           
             npm install
       - run:
           name: Run backend tests
@@ -59,7 +59,7 @@ jobs:
                   migrate
           
       - run:
-          name: Deploy backend and verify
+          name: Deploy backend  
           command: |
             echo "Triggering deployment..." 
             RESPONSE=$(curl -s -X POST \
@@ -70,8 +70,10 @@ jobs:
 
             DEPLOYMENT_ID=$(echo "$RESPONSE" | jq -r '.deployment.id')
             echo "Triggered deployment ID: $DEPLOYMENT_ID"
-
-            echo "Polling deployment status..."
+      - run:  
+          name: Verify Deployment
+          command: |
+            echo "Verifying deployment status..."
             while true; do
                 STATUS=$(curl -s -H "Authorization: Bearer $SEVALLA_API_TOKEN" \
                 "https://api.sevalla.com/v2/applications/deployments/$DEPLOYMENT_ID" \
