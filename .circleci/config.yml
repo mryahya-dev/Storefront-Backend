@@ -11,7 +11,10 @@ jobs:
           command: |
            
             npm install
-
+      - run:
+          name: Run backend tests
+          command: |
+            npm test
 
   build-backend-image:
     docker:
@@ -24,8 +27,7 @@ jobs:
       - run:
           name: Build backend Docker image
           command: |
-            cd back-end
-            docker build -t $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest .
+             docker build -t $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest .
       - run:
           name: Push image to Docker Hub
           command: |

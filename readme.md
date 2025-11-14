@@ -10,11 +10,12 @@ This backend supports user authentication with role-based authorization, product
 
 - **Backend:** Node.js, Express, TypeScript
 - **Database:** PostgreSQL
-- **Authentication:** JWT stored in HttpOnly cookies
+- **Migrations:** **Flyway** for automated SQL schema migrations
+- **Authentication:** JWT stored in **HttpOnly cookies**
 - **File Storage:** Cloudinary for product images
-- **Security:** bcrypt for password hashing, express-rate-limit
+- **Security:** bcrypt for password hashing, express-rate-limit, password + JWT length validation
 - **Testing:** Jasmine, Supertest
-- **Deployment:** Can be deployed with CI/CD, Docker
+- **Deployment:** Docker-ready backend, CI/CD with automated test → build → deploy
 
 ---
 
