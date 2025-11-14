@@ -40,24 +40,43 @@ router.get("/:id", requireAuth, async (req: any, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+// PUT /api/users/:id — update user details (admin can update any user, user can update own info)
+router.put("/:id", requireAuth, async (req: any, res) => {
+  const userId = req.params.id;
 
-// PUT /api/users/:id/role (admin)
-router.put(
-  "/:id/role",
-  requireAuth,
-  requireRole(["admin"]),
-  async (req, res) => {
-    try {
-      const { role } = req.body;
-      if (!role || !["customer", "admin"].includes(role))
-        return res.status(400).json({ error: "Invalid role" });
-      const updated = await usersModel.updateUserRole(req.params.id, role);
-      res.json(updated);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Server error" });
+  try {
+    // Check if current user is admin or updating own info
+    if (req.user.role !== "admin" && req.user.id !== userId) {
+      return res
+        .status(403)
+        .json({ error: "Forbidden: cannot update other users" });
     }
+
+    // Only allow updating name, email, and password
+    const updateData: any = {};
+    if (req.body.name) updateData.name = req.body.name;
+    if (req.body.email) updateData.email = req.body.email;
+    if (req.body.password) {
+      if (req.body.password.length < 8) {
+        return res
+          .status(400)
+          .json({ error: "Password must be at least 8 characters" });
+      }
+      updateData.password = req.body.password; // hash inside model
+    }
+
+    const updatedUser = await usersModel.updateUser(userId, updateData);
+
+    return res.json({
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role, // returned but cannot be changed
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
   }
-);
+});
 
 export default router;
