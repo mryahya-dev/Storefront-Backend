@@ -1,0 +1,116 @@
+version: 2.1
+
+jobs:
+  test-backend:
+    docker:
+      - image: cimg/node:18.20
+    steps:
+      - checkout
+      - run:
+          name: Install backend dependencies
+          command: |
+            cd back-end
+            npm install
+      - run:
+          name: Run backend tests
+          command: |
+            cd back-end
+            mkdir -p uploads
+            npm test
+
+  build-backend-image:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      DOCKER_HUB_USERNAME: yahyeapps
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build backend Docker image
+          command: |
+            cd back-end
+            docker build -t $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest .
+      - run:
+          name: Push image to Docker Hub
+          command: |
+            echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+            docker push $DOCKER_HUB_USERNAME/yahyeapps/storefront_backend:latest
+
+  deploy-and-verify:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: Install jq
+          command: sudo apt-get update && sudo apt-get install -y jq
+
+      - run:
+          name: Install Flyway && Run DB Migrations
+          command: |
+            curl -L https://download.flywaydb.org/flyway-commandline-latest-linux-x64.tar.gz -o flyway.tar.gz
+            tar -xzf flyway.tar.gz
+            sudo mv flyway-*/flyway /usr/local/bin/flyway
+            flyway -url="jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}" \
+                  -user="${{ secrets.DB_USERNAME }}" \
+                  -password="${{ secrets.DB_PASSWORD }}" \
+                  -locations=filesystem:${{ github.workspace }}/sql-migrations \
+                  migrate
+          
+      - run:
+          name: Deploy backend and verify
+          command: |
+            echo "Triggering deployment..." 
+            RESPONSE=$(curl -s -X POST \
+              -H "Authorization: Bearer $SEVALLA_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              "$SEVALLA_DEPLOY_HOOK_URL" \
+              -d '{"docker_image":"'$DOCKER_HUB_USERNAME'/yahyeapps/storefront_backend:latest"}')
+
+            DEPLOYMENT_ID=$(echo "$RESPONSE" | jq -r '.deployment.id')
+            echo "Triggered deployment ID: $DEPLOYMENT_ID"
+
+            echo "Polling deployment status..."
+            while true; do
+                STATUS=$(curl -s -H "Authorization: Bearer $SEVALLA_API_TOKEN" \
+                "https://api.sevalla.com/v2/applications/deployments/$DEPLOYMENT_ID" \
+                | jq -r '.deployment.status')
+              
+              echo "Current deployment status: $STATUS"
+
+              if [[ "$STATUS" == "success" ]]; then
+                echo "✅ Deployment succeeded!"
+                break
+              elif [[ "$STATUS" == "failed" ]]; then
+                echo "❌ Deployment failed!"
+                exit 1
+              fi
+
+              echo "Waiting 10 seconds..."
+              sleep 10
+            done
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - test-backend:
+          context: shared_envs
+          filters:
+            branches:
+              only: main
+      - build-backend-image:
+          context: shared_envs
+          requires:
+            - test-backend
+          filters:
+            branches:
+              only: main
+      - deploy-and-verify:
+          context: shared_envs
+          requires:
+            - build-backend-image
+          filters:
+            branches:
+              only: main
