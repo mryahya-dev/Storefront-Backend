@@ -325,14 +325,14 @@ CLOUDINARY_UPLOAD_FOLDER=storefront_products
 
 ## **Live Demo**
 
-- [Backend API Live Demo](https://storefront-backend.example.com)
+- [Backend API Live Demo](https://storefrontbackend-8kj4i.sevalla.app/api)
 
 ## **Example cURL Requests**
 
 **User Registration:**
 
 ```bash
-curl -X POST https://storefront-backend.example.com/api/auth/register \
+curl -X POST https://storefrontbackend-8kj4i.sevalla.app/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"name": "John Doe", "email": "john@example.com", "password": "password123"}'
 ```
@@ -340,7 +340,7 @@ curl -X POST https://storefront-backend.example.com/api/auth/register \
 **Login:**
 
 ```bash
-curl -X POST https://storefront-backend.example.com/api/auth/login \
+curl -X POST https://storefrontbackend-8kj4i.sevalla.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password123"}'
 ```
@@ -348,13 +348,13 @@ curl -X POST https://storefront-backend.example.com/api/auth/login \
 **Get Products (Paginated):**
 
 ```bash
-curl https://storefront-backend.example.com/api/products?limit=10&offset=0
+curl https://storefrontbackend-8kj4i.sevalla.app/api/products?limit=10&offset=0
 ```
 
 **Create Product (Admin only, with image):**
 
 ```bash
-curl -X POST https://storefront-backend.example.com/api/products \
+curl -X POST https://storefrontbackend-8kj4i.sevalla.app/api/products \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -F "name=New Product" \
   -F "price=20.0" \
@@ -367,7 +367,7 @@ curl -X POST https://storefront-backend.example.com/api/products \
 **Update Product (Admin only, optional image):**
 
 ```bash
-curl -X PUT https://storefront-backend.example.com/api/products/2 \
+curl -X PUT https://storefrontbackend-8kj4i.sevalla.app/api/products/2 \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -F "name=Updated Product" \
   -F "price=25.0" \
@@ -380,20 +380,20 @@ curl -X PUT https://storefront-backend.example.com/api/products/2 \
 **Delete Product (Admin only):**
 
 ```bash
-curl -X DELETE https://storefront-backend.example.com/api/products/2 \
+curl -X DELETE https://storefrontbackend-8kj4i.sevalla.app/api/products/2 \
   -H "Authorization: Bearer <JWT_TOKEN>"
 ```
 
 **Get Orders (Paginated):**
 
 ```bash
-curl -H "Authorization: Bearer <JWT_TOKEN>" https://storefront-backend.example.com/api/orders?limit=10&offset=0
+curl -H "Authorization: Bearer <JWT_TOKEN>" https://storefrontbackend-8kj4i.sevalla.app/api/orders?limit=10&offset=0
 ```
 
 **Create Order:**
 
 ```bash
-curl -X POST https://storefront-backend.example.com/api/orders \
+curl -X POST https://storefrontbackend-8kj4i.sevalla.app/api/orders \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"items": [{"product_id": "2", "quantity": 2, "price": 25.0}]}'
@@ -402,13 +402,13 @@ curl -X POST https://storefront-backend.example.com/api/orders \
 **Get Users (Admin only, paginated):**
 
 ```bash
-curl -H "Authorization: Bearer <JWT_TOKEN>" https://storefront-backend.example.com/api/users?limit=10&offset=0
+curl -H "Authorization: Bearer <JWT_TOKEN>" https://storefrontbackend-8kj4i.sevalla.app/api/users?limit=10&offset=0
 ```
 
 **Update User Info:**
 
 ```bash
-curl -X PUT https://storefront-backend.example.com/api/users/1 \
+curl -X PUT https://storefrontbackend-8kj4i.sevalla.app/api/users/1 \
   -H "Authorization: Bearer <JWT_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{"name": "Updated Name", "email": "newemail@example.com", "password": "newpassword123"}'
