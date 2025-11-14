@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   apply_sql_migrations:
     docker:
-      - image: cimg/postgres:15.2
+      - image: cimg/base:stable
     steps:
       - checkout
       - run:
@@ -16,10 +16,10 @@ jobs:
       - run:
           name: Apply SQL migrations
           command: |
-             flyway -url="jdbc:postgresql://${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}" \
+             flyway -url="jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME" \
                 -user="$DB_USERNAME" \
                 -password="$DB_PASSWORD" \
-                -locations=/sql-migrations \
+                -locations=filesystem:sql-migrations \
                 migrate
   test-backend:
     docker:
@@ -105,6 +105,8 @@ workflows:
               only: main
       - test-backend:
           context: shared_envs
+          requires:
+            - apply_sql_migrations
           filters:
             branches:
               only: main
