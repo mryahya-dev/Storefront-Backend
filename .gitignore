@@ -1,0 +1,10 @@
+# Node.js dependencies
+node_modules/
+
+# Output directories
+dist/
+uploads/
+
+# Environment variables
+.env
+
