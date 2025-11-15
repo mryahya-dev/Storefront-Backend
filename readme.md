@@ -284,6 +284,8 @@ This backend supports user authentication with role-based authorization, product
 - Passwords are hashed with **bcrypt + pepper**
 - Requests are **rate-limited** using `express-rate-limit`
 - Password length is validated before hashing, and JWT token length is validated before verification to prevent CPU abuse.
+- Request body size is limited (`express.json({ limit: "10mb" })`)
+- HTTP headers are limited using Node’s `--max-http-header-size` flag to prevent oversized header attacks
 
 ---
 

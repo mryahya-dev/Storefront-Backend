@@ -20,7 +20,10 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Request size limits
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(cookieParser()); // <--- important
 
 const limiter = rateLimit({
